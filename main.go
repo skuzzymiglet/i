@@ -14,21 +14,22 @@ import (
 )
 
 func main() {
+	log.SetFlags(0)
 	flag.Parse()
 	if flag.NArg() != 1 {
 		log.Fatalf("Wrong number of args: %d, need 1 (Neovim RPC dial address)", flag.NArg())
 	}
 	n, err := nvim.Dial(flag.Arg(0))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	cw, err := n.CurrentWindow()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	b, err := n.WindowBuffer(cw)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	var (
 		lastTick   int
@@ -38,7 +39,7 @@ func main() {
 	for {
 		tick, err := n.BufferChangedTick(b)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		if tick > lastTick {
 			termenv.ClearScreen()
@@ -49,7 +50,7 @@ func main() {
 			br := bufio.NewReader(r)
 			cmd, err := br.ReadString('\n')
 			if err != nil {
-				panic(err)
+				log.Fatal(err)
 			}
 
 			ctx, cancelFunc = context.WithCancel(context.Background())
